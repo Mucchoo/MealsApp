@@ -58,6 +58,9 @@ dependencies {
     implementation("androidx.compose.ui:ui-graphics")
     implementation("androidx.compose.ui:ui-tooling-preview")
     implementation("androidx.compose.material3:material3")
+    implementation("androidx.compose.material3:material3:<version>")
+    implementation("androidx.compose.material:material:<version>")
+
 
     // Life Cycle
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.2")
@@ -71,6 +74,9 @@ dependencies {
 
     // Image loading
     implementation("io.coil-kt:coil-compose:2.2.2")
+
+    // Navigation
+    implementation("androidx.navigation:navigation-compose:2.7.5")
 
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")

@@ -28,6 +28,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -36,80 +37,86 @@ import coil.compose.rememberAsyncImagePainter
 import coil.compose.rememberImagePainter
 import com.musayazici.mealsapp.model.response.MealResponse
 import com.musayazici.mealsapp.ui.theme.MealsAppTheme
+import androidx.compose.material.LocalContentAlpha
+import androidx.compose.material.ContentAlpha
 
 @Composable
-fun MealsCategoriesScreen() {
+fun MealsCategoriesScreen(navigationCallback: (String) -> Unit) {
     val viewModel: MealsCategoriesViewModel = viewModel()
     val meals = viewModel.mealsState.value
-
     LazyColumn(contentPadding = PaddingValues(16.dp)) {
         items(meals) { meal ->
-            MealCategory(meal = meal)
+            MealCategory(meal, navigationCallback)
         }
     }
 }
 
 @Composable
-fun MealCategory(meal: MealResponse) {
-    var isExpanded: Boolean by remember { mutableStateOf(false) }
-
+fun MealCategory(meal: MealResponse, navigationCallback: (String) -> Unit) {
+    var isExpanded by remember { mutableStateOf(value = false) }
     Card(
         shape = RoundedCornerShape(8.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         modifier = Modifier
             .fillMaxWidth()
             .padding(top = 16.dp)
+            .clickable {
+            navigationCallback(meal.id)
+            }
     ) {
         Row(modifier = Modifier.animateContentSize()) {
             Image(
-                painter = rememberAsyncImagePainter(meal.imageUrl),
+                painter = rememberImagePainter(meal.imageUrl),
                 contentDescription = null,
                 modifier = Modifier
                     .size(88.dp)
                     .padding(4.dp)
                     .align(Alignment.CenterVertically)
             )
-
             Column(
                 modifier = Modifier
                     .align(Alignment.CenterVertically)
-                    .padding(16.dp)
                     .fillMaxWidth(0.8f)
-                ) {
+                    .padding(16.dp)
+            ) {
                 Text(
                     text = meal.name,
-                    style = MaterialTheme.typography.headlineSmall
+                    style = MaterialTheme.typography.titleMedium
                 )
-
-                CompositionLocalProvider() {
+                CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
                     Text(
                         text = meal.description,
+                        textAlign = TextAlign.Start,
                         style = MaterialTheme.typography.bodySmall,
                         overflow = TextOverflow.Ellipsis,
-                        maxLines = if(isExpanded) 10 else 4
+                        maxLines = if (isExpanded) 10 else 4
                     )
                 }
             }
-
-            Icon(imageVector = if(isExpanded)
-                Icons.Filled.KeyboardArrowUp
-            else Icons.Filled.KeyboardArrowDown,
+            Icon(
+                imageVector = if (isExpanded)
+                    Icons.Filled.KeyboardArrowUp
+                else
+                    Icons.Filled.KeyboardArrowDown,
                 contentDescription = "Expand row icon",
                 modifier = Modifier
                     .padding(16.dp)
-                    .align(if(isExpanded)
-                        Alignment.Bottom
-                    else Alignment.CenterVertically)
+                    .align(
+                        if (isExpanded)
+                            Alignment.Bottom
+                        else
+                            Alignment.CenterVertically
+                    )
                     .clickable { isExpanded = !isExpanded }
             )
         }
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun DefaultPreview() {
-    MealsAppTheme {
-        MealsCategoriesScreen()
-    }
-}
+//@Preview(showBackground = true)
+//@Composable
+//fun DefaultPreview() {
+//    MealzAppTheme {
+//        MealsCategoriesScreen({ })
+//    }
+//}
